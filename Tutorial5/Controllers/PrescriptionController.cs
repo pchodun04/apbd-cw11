@@ -18,7 +18,7 @@ public class PrescriptionController
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var books = await _dbService.GetBooks();
-        return Ok(books);
+        var Prescriptions = await PrescriptionServie.AddPrescriptions();
+        return Ok(Prescriptions);
     }
 }
