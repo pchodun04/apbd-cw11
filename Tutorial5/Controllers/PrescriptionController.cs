@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Tutorial5.DTOs;
 using Tutorial5.Services;
 
 namespace Tutorial5.Controllers;
@@ -7,18 +8,18 @@ namespace Tutorial5.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PrescriptionController
+public class PrescriptionController : ControllerBase
 {
-    private readonly IDbService _dbService;
-    public PrescriptionController(IDbService dbService)
+    private readonly IPrescriptionService _prescriptionService;
+    public PrescriptionController(IPrescriptionService prescriptionService)
     {
-        _dbService = dbService;
+        _prescriptionService = prescriptionService;
     }
         
-    [HttpGet]
-    public async Task<IActionResult> Get()
+    [HttpPost]
+    public async Task<IActionResult> AddPrescription([FromBody] CreatePrescriptionDto prescription)
     {
-        var Prescriptions = await PrescriptionServie.AddPrescriptions();
-        return Ok(Prescriptions);
+        await _prescriptionService.AddPrescription(prescription);
+        return Ok("Recepta została pomyślnie dodana.");
     }
 }

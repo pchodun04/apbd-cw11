@@ -4,5 +4,5 @@ namespace Tutorial5.Services;
 
 public interface IPrescriptionService
 {
-    Task AddPrescription(CreatePrescriptionRequestDto createPrescriptionRequest);
+    Task AddPrescription(CreatePrescriptionDto createPrescription);
 }

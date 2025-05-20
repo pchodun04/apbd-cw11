@@ -1,6 +1,6 @@
 ﻿namespace Tutorial5.DTOs;
 
-public class CreatePrescriptionRequestDto
+public class CreatePrescriptionDto
 {
     public PatientDto Patient { get; set; }
     public DateTime Date { get; set; }

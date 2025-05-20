@@ -11,7 +11,7 @@ public class PrescriptionService : IPrescriptionService
         _context = context;
     }
 
-    public async Task AddPrescription(CreatePrescriptionRequestDto createPrescriptionRequest)
+    public async Task AddPrescription(CreatePrescriptionDto createPrescription)
     {
         
     }
