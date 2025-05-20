@@ -17,9 +17,36 @@ public class PrescriptionController : ControllerBase
     }
         
     [HttpPost]
-    public async Task<IActionResult> AddPrescription([FromBody] CreatePrescriptionDto prescription)
+    public async Task<IActionResult> AddPrescription(CreatePrescriptionDto prescription)
     {
-        await _prescriptionService.AddPrescription(prescription);
-        return Ok("Recepta została pomyślnie dodana.");
-    }
+        // Sprawdzenie: maksymalnie 10 leków
+        if (prescription.Medicaments.Count > 10)
+            return BadRequest("Recepta może zawierać maksymalnie 10 leków.");
+
+        // Sprawdzenie: dueDate >= date
+        if (prescription.DueDate < prescription.Date)
+            return BadRequest("DueDate musi być późniejszy lub równy Date.");
+
+        // Sprawdzenie: czy istnieją wszystkie leki
+        foreach (var med in prescription.Medicaments)
+        {
+            if (!await _prescriptionRepository.DoesMedicamentExist(med.IdMedicament))
+                return NotFound($"Lek o ID {med.IdMedicament} nie istnieje.");
+        }
+
+        // Sprawdzenie: czy lekarz istnieje
+        if (!await _prescriptionRepository.DoesDoctorExist(prescription.IdDoctor))
+            return NotFound($"Lekarz o ID {prescription.IdDoctor} nie istnieje.");
+
+        // Pobierz lub dodaj pacjenta
+        var patient = await _prescriptionRepository.GetPatient(prescription.Patient);
+        if (patient == null)
+        {
+            patient = await _prescriptionRepository.AddPatient(prescription.Patient);
+        }
+
+        // Dodaj receptę i leki
+        var createdPrescription = await _prescriptionRepository.AddPrescriptionWithMedicaments(prescription, patient.IdPatient);
+
+        return Created(Request.Path.Value ?? "/api/prescriptions", createdPrescription);
 }

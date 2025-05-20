@@ -8,4 +8,5 @@ public class CreatePrescriptionDto
     public int IdDoctor { get; set; }
     
     public List<MedicamentDto> Medicaments { get; set; }
+    
 }
