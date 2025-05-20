@@ -1,4 +1,5 @@
-﻿using Tutorial5.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Tutorial5.Data;
 using Tutorial5.DTOs;
 using Tutorial5.Models;
 
@@ -13,20 +14,20 @@ public class PrescriptionService : IPrescriptionService
     }
     public async Task<bool> DoesMedicamentExist(int id)
     {
-        return await _context.Medicament.AnyAsync(m => m.IdMedicament == id);
+        return await _context.Medicaments.AnyAsync(m => m.IdMedicament == id);
     }
 
     public async Task<bool> DoesDoctorExist(int id)
     {
-        return await _context.Doctor.AnyAsync(d => d.IdDoctor == id);
+        return await _context.Doctors.AnyAsync(d => d.IdDoctor == id);
     }
 
-    public async Task<Patient?> GetPatient(PatientDto dto)
+    public async Task<Patient?> GetPatient(PatientDto patient)
     {
         return await _context.Patients.FirstOrDefaultAsync(p =>
-            p.FirstName == dto.FirstName &&
-            p.LastName == dto.LastName &&
-            p.Birthdate == dto.Birthdate);
+            p.FirstName == patient.FirstName &&
+            p.LastName == patient.LastName &&
+            p.Birthdate == patient.Birthdate);
     }
 
     public async Task<Patient> AddPatient(PatientDto dto)
@@ -50,7 +51,7 @@ public class PrescriptionService : IPrescriptionService
             DueDate = createPrescription.DueDate,
             IdDoctor = createPrescription.IdDoctor,
             IdPatient = patientId,
-            PrescriptionMedicaments = createPrescription.Medicaments.Select(m => new PrescriptionMedicament
+            PrescriptionMedicaments = createPrescription.Medicaments.Select(m => new PrescriptionMedicaments
             {
                 IdMedicament = m.IdMedicament,
                 Dose = m.Dose,
@@ -60,8 +61,7 @@ public class PrescriptionService : IPrescriptionService
 
         _context.Prescriptions.Add(prescription);
         await _context.SaveChangesAsync();
-
-        // Opcjonalnie możesz zwrócić DTO ze szczegółami
+        
         return new PrescriptionDto
         {
             IdPrescription = prescription.IdPrescription,
@@ -79,7 +79,7 @@ public class PrescriptionService : IPrescriptionService
                 IdMedicament = pm.IdMedicament,
                 Dose = pm.Dose,
                 Description = pm.Description,
-                Name = _context.Medicaments.FirstOrDefault(m => m.IdMedicament == pm.IdMedicament)?.Name
+                Name = _context.Medicaments.FirstOrDefaultAsync(m => m.IdMedicament == pm.IdMedicament)?.Name
             }).ToList()
         };
     }

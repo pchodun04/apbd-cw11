@@ -11,11 +11,12 @@ namespace Tutorial5.Controllers;
 public class PrescriptionController : ControllerBase
 {
     private readonly IPrescriptionService _prescriptionService;
+
     public PrescriptionController(IPrescriptionService prescriptionService)
     {
         _prescriptionService = prescriptionService;
     }
-        
+
     [HttpPost]
     public async Task<IActionResult> AddPrescription(CreatePrescriptionDto prescription)
     {
@@ -30,23 +31,25 @@ public class PrescriptionController : ControllerBase
         // Sprawdzenie: czy istnieją wszystkie leki
         foreach (var med in prescription.Medicaments)
         {
-            if (!await _prescriptionRepository.DoesMedicamentExist(med.IdMedicament))
+            if (!await _prescriptionService.DoesMedicamentExist(med.IdMedicament))
                 return NotFound($"Lek o ID {med.IdMedicament} nie istnieje.");
         }
 
         // Sprawdzenie: czy lekarz istnieje
-        if (!await _prescriptionRepository.DoesDoctorExist(prescription.IdDoctor))
+        if (!await _prescriptionService.DoesDoctorExist(prescription.IdDoctor))
             return NotFound($"Lekarz o ID {prescription.IdDoctor} nie istnieje.");
 
         // Pobierz lub dodaj pacjenta
-        var patient = await _prescriptionRepository.GetPatient(prescription.Patient);
+        var patient = await _prescriptionService.GetPatient(prescription.Patient);
         if (patient == null)
         {
-            patient = await _prescriptionRepository.AddPatient(prescription.Patient);
+            patient = await _prescriptionService.AddPatient(prescription.Patient);
         }
 
         // Dodaj receptę i leki
-        var createdPrescription = await _prescriptionRepository.AddPrescriptionWithMedicaments(prescription, patient.IdPatient);
+        var createdPrescription =
+            await _prescriptionService.AddPrescriptionWithMedicaments(prescription, patient.IdPatient);
 
         return Created(Request.Path.Value ?? "/api/prescriptions", createdPrescription);
+    }
 }

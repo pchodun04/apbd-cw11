@@ -7,6 +7,6 @@ public interface IPrescriptionService
 {
     Task<bool> DoesMedicamentExist(int id);
     Task<bool> DoesDoctorExist(int id);
-    Task<Patient?> GetPatient(PatientDto dto);
-    Task<Patient> AddPatient(PatientDto dto);
-    Task<PrescriptionDto> AddPrescriptionWithMedicaments(CreatePrescriptionDto dto, int patientId);}
+    Task<Patient?> GetPatient(PatientDto patient);
+    Task<Patient> AddPatient(PatientDto patient);
+    Task<PrescriptionDto> AddPrescriptionWithMedicaments(CreatePrescriptionDto createPrescription, int patientId);}
