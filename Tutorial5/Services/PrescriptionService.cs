@@ -79,7 +79,7 @@ public class PrescriptionService : IPrescriptionService
                 IdMedicament = pm.IdMedicament,
                 Dose = pm.Dose,
                 Description = pm.Description,
-                Name = _context.Medicaments.FirstOrDefaultAsync(m => m.IdMedicament == pm.IdMedicament)?.Name
+                Name = _context.Medicaments.FirstOrDefault(m => m.IdMedicament == pm.IdMedicament)?.Name
             }).ToList()
         };
     }
